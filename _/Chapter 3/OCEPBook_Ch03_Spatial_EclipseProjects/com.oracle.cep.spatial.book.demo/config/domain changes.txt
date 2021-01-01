@@ -1,0 +1,22 @@
+
+<!-- ADD THESE ELEMENTS TO THE HTTP PUB-SUB CONFIGURATION OF YOUR DOMAIN -->  
+        <element>
+          <channel-pattern>/ship/shippos</channel-pattern>
+        </element>
+        <element>
+          <channel-pattern>/ship/shipoutput</channel-pattern>
+        </element>
+        <element>
+          <channel-pattern>/ship/shiparrival</channel-pattern>
+        </element>
+        
+<!-- THIS IS ALSO USEFUL FOR ROTATING YOUR LOG FILES, INSTEAD OF THE DEFAULT log-file CONFIG  -->
+    <log-file>
+        <name>myFileConfig</name>
+        <number-of-files-limited>true</number-of-files-limited>
+        <rotated-file-count>4</rotated-file-count>
+        <rotate-log-on-startup-enabled>true</rotate-log-on-startup-enabled>
+        <log-file-severity>Debug</log-file-severity>
+        <log-file-rotation-dir>logs</log-file-rotation-dir>
+    </log-file>
+        

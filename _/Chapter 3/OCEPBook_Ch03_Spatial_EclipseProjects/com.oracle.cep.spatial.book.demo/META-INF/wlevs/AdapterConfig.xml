@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+    
+    <jms-adapter>
+        <name>GPSPositionsJMSInputAdapter</name>       
+        <jndi-provider-url>t3://localhost:7001</jndi-provider-url>
+        <connection-jndi-name>jms/SpatialDemoConnectionFactory</connection-jndi-name>
+        <destination-jndi-name>jms/GPSPositionsInputQueue</destination-jndi-name>
+        <user>weblogic</user>
+        <password>welcome1</password>
+        <work-manager>JettyWorkManager</work-manager>
+    </jms-adapter>
+
+	<http-pub-sub-adapter>
+		<name>GPSPositionsHTTPSubAdapter</name>
+		<server-url>http://localhost:9002/pubsub</server-url>		
+		<channel>/ship/shippos</channel>
+		<event-type>ShipPosEvent</event-type>
+	</http-pub-sub-adapter>
+
+
+	<http-pub-sub-adapter>
+		<name>GPSPositionsHTTPPubAdapter</name>
+		<server-context-path>/pubsub</server-context-path>
+		<channel>/ship/shipoutput</channel>
+		<event-type>ShipPosEvent</event-type>
+	</http-pub-sub-adapter>
+</wlevs:config>
+
+
+<!-- 
+    <jms-adapter>
+        <name>TransactionOutputAdapter</name>
+        <event-type>CardTransaction</event-type>
+        <jndi-provider-url>t3://localhost:7001</jndi-provider-url>
+        <jndi-factory>weblogic.jndi.WLInitialContextFactory</jndi-factory>
+        <connection-jndi-name>jms/SpatialDemoConnectionFactory</connection-jndi-name>
+        <destination-jndi-name>jms/SpatialAlertsQueue</destination-jndi-name>
+        <user>weblogic</user>
+        <password>welcome1</password>
+        <session-transacted>false</session-transacted>
+        <delivery-mode>nonpersistent</delivery-mode>
+    </jms-adapter>
+ -->
+ 

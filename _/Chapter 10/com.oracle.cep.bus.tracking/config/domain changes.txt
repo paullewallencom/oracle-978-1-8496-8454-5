@@ -1,0 +1,17 @@
+ # ADD HTTP pub/sub channels
+ 
+         <element>
+          <channel-pattern>/bus/buspos</channel-pattern>
+        </element>
+    	<element>
+          <channel-pattern>/bus/busstoparrival</channel-pattern>
+        </element>
+    	<element>
+          <channel-pattern>/bus/busstop</channel-pattern>
+     	</element>
+    	<element>
+          <channel-pattern>/bus/busdeviation</channel-pattern>
+     	</element>
+     	<element>
+          <channel-pattern>/bus/pathlink</channel-pattern>
+     	</element>

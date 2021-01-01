@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/spring-wlevs-v11_1_1_7.xsd">
+
+ 
+    <wlevs:event-type-repository>
+        <wlevs:event-type type-name="HelloWorldEvent">
+            <wlevs:class>com.oracle.cep.helloworld.event.HelloWorldEvent</wlevs:class>
+        </wlevs:event-type>
+    </wlevs:event-type-repository>
+ 
+  
+	<osgi:service interface="com.bea.wlevs.ede.api.AdapterFactory">
+	    <osgi:service-properties>
+	        <entry key="type" value="myHelloAdapter"></entry>
+	    </osgi:service-properties>
+	    <bean class="com.oracle.cep.helloworld.adapter.HelloWorldAdapterFactory" />
+	</osgi:service>
+	
+
+</beans>
+

@@ -1,0 +1,14 @@
+<jxb:bindings 
+  xmlns:jxb="http://java.sun.com/xml/ns/jaxb" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  jxb:version="2.0">
+    <jxb:globalBindings generateValueClass="true" generateElementClass="true">	    		
+		<jxb:serializable uid="100" />
+		<jxb:javaType 
+			name="long" 
+			xmlType="xs:dateTime"
+			parseMethod="oracle.cep.example.jaxb.customizer.JaxbXmlDateTimeCustomizer.xmlDateTimeToLong"
+			printMethod="oracle.cep.example.jaxb.customizer.JaxbXmlDateTimeCustomizer.longToXmlDateTime">
+		</jxb:javaType>
+	</jxb:globalBindings>
+</jxb:bindings>

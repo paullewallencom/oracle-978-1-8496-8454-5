@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+
+    <http-pub-sub-adapter>
+        <name>BusPosPub</name>
+        <server-url>http://localhost:9002/pubsub</server-url>
+        <channel>/bus/buspos</channel>
+        <event-type>BusPosPubEvent</event-type>
+    </http-pub-sub-adapter>
+
+    <http-pub-sub-adapter>
+        <name>BusStopPub</name>
+        <server-url>http://localhost:9002/pubsub</server-url>
+        <channel>/bus/busstop</channel>
+        <event-type>BusStopPubEvent</event-type>
+    </http-pub-sub-adapter>
+
+    <http-pub-sub-adapter>
+        <name>BusStopArrivalPub</name>
+        <server-url>http://localhost:9002/pubsub</server-url>
+        <channel>/bus/busstoparrival</channel>
+        <event-type>BusStopArrivalEvent</event-type>
+    </http-pub-sub-adapter>
+
+</wlevs:config>
+

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="Ship Position Simulator JAR" basedir="." default="copy">
+	
+	<target name="clean">
+		<mkdir dir="${basedir}/dist"/>
+		<delete includeemptydirs="true">
+			<fileset dir="${basedir}/dist" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="compile">
+		<javac destdir="bin" debug="true" fork="true">
+			<classpath>
+				<fileset dir="${basedir}/lib">
+					<include name="commons-lang-2.5.jar"/>
+					<include name="commons-logging-1.1.1.jar"/>
+					<include name="spatial-demo-jaxb.jar"/>
+					<include name="wlclient.jar"/>
+					<include name="wljmsclient.jar"/>
+				</fileset>
+			</classpath>
+			<src path="src"/>
+			<patternset includes="**/*.java"/>
+		</javac>
+	</target>
+
+ 
+	<target name="dist" depends="clean,compile"> 
+		<jar destfile="${basedir}/dist/shippos-simulator.jar">
+			<fileset dir="${basedir}/bin" />
+		</jar>
+	</target>
+
+	<target name="copy" depends="dist"> 
+		<copy file="dist/shippos-simulator.jar" todir="lib"/>
+	</target>
+	
+</project>

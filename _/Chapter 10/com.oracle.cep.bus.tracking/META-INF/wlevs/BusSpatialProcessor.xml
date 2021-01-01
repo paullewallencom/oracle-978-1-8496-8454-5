@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+
+  <processor>
+    <name>BusSpatialProcessor</name>
+    <rules>
+
+    <view id="BusPosGeomStream" >
+        select bus.busId as busId, bus.seq as seq, 
+        com.oracle.cep.cartridge.spatial.Geometry.createPoint(8307, bus.longitude, bus.latitude) as geom
+        from BusPosStream as bus
+    </view>
+    
+    <query id="BusArrival">
+        ISTREAM(
+            select systimestamp() as incidentTime, bus.busId as busId, busstop.seq as stopSeq
+            from BusPosGeomStream[NOW] as bus, BusStopRelation as busstop
+            where CONTAIN@spatial(busstop.geom, bus.geom, 0.0d) = true and
+                   bus.busId = busstop.busId
+        )
+    </query>
+    
+    <query id="BusStopOut">
+        select busId, seq as id, com.oracle.cep.sample.spatial.OrdsHelper.getOrds(geom) as coords from BusStopRelation
+    </query>
+
+    <query id="BusPosOut">
+        select systimestamp() as lastTime, busId, longitude, latitude from BusPosStream
+    </query>
+   </rules>
+  </processor>
+
+  <channel>
+      <name>BusStopArrivalChannel</name>
+      <selector>BusArrival</selector>
+  </channel>
+
+  <channel>
+      <name>BusPosChannel</name>
+      <selector>BusPosOut</selector>
+  </channel>
+
+  <channel>
+      <name>BusStopChannel</name>
+      <selector>BusStopOut</selector>
+  </channel>
+  
+</wlevs:config>

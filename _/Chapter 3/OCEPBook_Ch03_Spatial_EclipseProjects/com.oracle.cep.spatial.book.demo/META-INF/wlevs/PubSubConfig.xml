@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+
+    <http-pub-sub-adapter>
+        <name>ShipPosPubAdapter</name>
+        <server-context-path>/pubsub</server-context-path>
+        <channel>/sample/shippos</channel>
+        <event-type>ShipPosPub</event-type>
+    </http-pub-sub-adapter>
+    
+</wlevs:config>
+

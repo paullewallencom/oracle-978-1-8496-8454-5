@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/spring-wlevs-v11_1_1_6.xsd">
+
+    <wlevs:event-type-repository>
+
+        <wlevs:event-type type-name="ShipPosEvent">
+            <wlevs:class>com.oracle.cep.event.ShipPosEvent</wlevs:class>
+        </wlevs:event-type>
+
+    	<wlevs:event-type type-name="ShipPos">
+			<wlevs:properties type="tuple">
+				<wlevs:property name="shipId" type="int" />
+				<wlevs:property name="seq" type="int" />
+				<wlevs:property name="latitude" type="double" />
+				<wlevs:property name="longitude" type="double" />
+				<wlevs:property name="info" type="char" length="256" />
+			</wlevs:properties>
+		</wlevs:event-type>
+
+
+	
+		<wlevs:event-type type-name="ShipPosPub">
+            <wlevs:properties type="tuple">               
+                <wlevs:property name="shipId" type="int"/>
+                <wlevs:property name="seq" type="int"/>                
+                <wlevs:property name="latitude" type="double"/>
+                <wlevs:property name="longitude" type="double"/>
+                <wlevs:property name="lasttime" type="int"/>
+            </wlevs:properties>
+		</wlevs:event-type>
+   </wlevs:event-type-repository>
+
+
+   
+    <wlevs:event-bean id="WebContentRegistration" class="com.oracle.cep.adapter.WebContentRegistration">
+    	<wlevs:instance-property name="serverPath" value="/ship"/>
+    	<wlevs:instance-property name="resourcePath" value="/webResources"/>
+    </wlevs:event-bean> 
+   
+    <!-- Assemble EPN (event processing network) -->
+
+    <wlevs:adapter id="ShipPositionGen" provider="csvgen">
+    	<wlevs:instance-property name="port" value="9022"/>
+        <wlevs:instance-property name="eventTypeName" value="ShipPos"/>
+        <wlevs:instance-property name="eventPropertyNames" value="shipId,seq,latitude,longitude"/>
+        <wlevs:listener ref="ShipPosChannel"/>
+    </wlevs:adapter>
+
+
+	<wlevs:adapter id="GPSPositionsJMSInputAdapter" provider="jms-inbound">
+		<wlevs:instance-property name="converterBean" ref="InboundJmsJaxbMessageConverter" />
+		<wlevs:listener ref="ShipPosEventChannel" />
+	</wlevs:adapter>
+
+	<bean id="InboundJmsJaxbMessageConverter" class="com.oracle.cep.adapter.InboundJmsJaxbMessageConverter"/>
+
+	<wlevs:channel id="ShipPosChannel" event-type="ShipPos"	max-size="0" max-threads="0">
+		<wlevs:listener ref="ShipPositionProcessor" />
+	</wlevs:channel>
+
+	<wlevs:processor id="ShipPositionProcessor">
+		<wlevs:listener ref="ShipPosPubChannel" />
+	</wlevs:processor>
+	
+	<wlevs:channel id="ShipPosPubChannel" event-type="ShipPosPub">
+		<wlevs:listener ref="ShipPosPubAdapter" />
+		<wlevs:listener ref="OutputBean" />
+	</wlevs:channel>
+    
+    <wlevs:event-bean id="OutputBean" class="com.oracle.cep.bean.OutputBean">
+    </wlevs:event-bean>
+    
+    <wlevs:adapter id="ShipPosPubAdapter" provider="httppub" />
+
+
+	<wlevs:channel event-type="ShipPosEvent" id="ShipPosEventChannel">
+		<wlevs:listener ref="ShipPosEventProcessor" />
+	</wlevs:channel>
+	
+	<wlevs:processor id="ShipPosEventProcessor">
+		<wlevs:listener ref="ShipPosOutputChannel" />
+	</wlevs:processor>
+	<wlevs:channel event-type="ShipPosEvent" id="ShipPosOutputChannel">
+		<wlevs:listener ref="ShipPosEventOutputBean" />
+		<wlevs:listener ref="GPSPositionsHTTPPubAdapter" />
+	</wlevs:channel>
+	
+	<wlevs:event-bean id="ShipPosEventOutputBean" class="com.oracle.cep.bean.OutputBean">
+    </wlevs:event-bean>
+    
+	<wlevs:adapter id="GPSPositionsHTTPSubAdapter" provider="httpsub">
+		<wlevs:listener ref="ShipPosEventChannel" />
+	</wlevs:adapter>
+
+	<wlevs:adapter id="GPSPositionsHTTPPubAdapter" provider="httppub">
+	</wlevs:adapter>
+</beans>

@@ -1,0 +1,16 @@
+# name of file containing your test data
+test.csvDataFile=ship_positions.csv
+# port the server will listen on for client connection
+test.port=9022
+# server host (localhost if not specified)
+#test.host=
+# do not change the packetType
+test.packetType=CSV
+test.loopBack=false
+test.secs=90
+test.rate=1
+
+#test.mode=client
+#test.senders=1
+#test.latencyStats=false
+#test.statInterval=2000

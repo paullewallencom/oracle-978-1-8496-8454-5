@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+    <processor>
+        <name>ShipPositionProcessor</name>
+        <rules>
+            <query id="ShipPosPubQuery">
+            SELECT 1 as lasttime, seq, shipId, longitude, latitude FROM ShipPosChannel
+            <!-- 
+            <![CDATA[ 
+        		ISTREAM(
+        		SELECT systimestamp() as lasttime, seq, shipId, longitude, latitude 
+        		FROM ShipPosChannel
+        		)        		
+         	]]>
+         	 -->
+    		</query>
+        </rules>
+    </processor>
+</wlevs:config>
+

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/spring-wlevs-v11_1_1_3.xsd">
+
+    <wlevs:event-type-repository>
+        <wlevs:event-type type-name="BusPos">
+            <wlevs:properties type="tuple">
+                <wlevs:property name="busId" type="int"/>
+                <wlevs:property name="seq" type="int"/>
+                <wlevs:property name="longitude" type="double"/>
+                <wlevs:property name="latitude" type="double"/>
+            </wlevs:properties>
+	</wlevs:event-type>
+
+    <wlevs:event-type type-name="BusStop">
+            <wlevs:properties type="tuple">
+                <wlevs:property name="busId" type="int"/>
+                <wlevs:property name="seq" type="int"/>
+                <wlevs:property name="geom" type="com.oracle.cep.cartridge.spatial.Geometry"/>
+            </wlevs:properties>
+	</wlevs:event-type>
+
+   <wlevs:event-type type-name="BusPosEvent">
+            <wlevs:properties type="tuple">
+                <wlevs:property name="busId" type="int"/>
+                <wlevs:property name="seq" type="int"/>
+                <wlevs:property name="geom" type="com.oracle.cep.cartridge.spatial.Geometry"/>
+            </wlevs:properties>
+	</wlevs:event-type>
+
+    <wlevs:event-type type-name="BusStopArrivalEvent">
+            <wlevs:properties type="tuple">
+                <wlevs:property name="incidentTime" type="int"/>
+                <wlevs:property name="busId" type="int"/>
+                <wlevs:property name="stopSeq" type="int"/>
+            </wlevs:properties>
+	</wlevs:event-type>
+
+    <wlevs:event-type type-name="BusPosPubEvent">
+            <wlevs:properties type="tuple">
+                <wlevs:property name="lastTime" type="int"/>
+                <wlevs:property name="busId" type="int"/>
+                <wlevs:property name="longitude" type="double"/>
+                <wlevs:property name="latitude" type="double"/>
+            </wlevs:properties>
+    </wlevs:event-type>
+        
+    <wlevs:event-type type-name="BusStopPubEvent">
+            <wlevs:properties type="tuple">
+                <wlevs:property name="busId" type="int"/>
+                <wlevs:property name="id" type="int"/>
+                <wlevs:property name="coords" type="java.util.List"/>
+            </wlevs:properties>
+    </wlevs:event-type>        
+       
+   </wlevs:event-type-repository>
+
+
+    <!-- Assemble EPN (event processing network) -->
+
+    <wlevs:adapter id="BusPositionGen" provider="csvgen">
+    	<wlevs:instance-property name="port" value="9020"/>
+        <wlevs:instance-property name="eventTypeName" value="BusPos"/>
+        <wlevs:instance-property
+                name="eventPropertyNames"
+                value="busId,seq,longitude,latitude"/>
+        <wlevs:listener ref="BusPosStream"/>
+        <wlevs:listener ref="BusStopAdapter"/>
+    </wlevs:adapter>
+
+    <wlevs:adapter id="BusStopAdapter" class="com.oracle.cep.sample.spatial.BusStopAdapter" >
+        <wlevs:instance-property name="path" value="bus_stops.csv"/>
+        <wlevs:instance-property name="eventType" value="BusStop"/>
+    </wlevs:adapter>
+
+    <wlevs:channel id="BusPosStream" event-type="BusPos" max-size="0" max-threads="0">
+        <wlevs:listener ref="BusSpatialProcessor"/>
+    </wlevs:channel>
+    
+    <wlevs:channel id="BusStopRelation" event-type="BusStop"  is-relation="true" >
+        <wlevs:listener ref="BusSpatialProcessor"/>
+        <wlevs:source ref="BusStopAdapter"/>
+    </wlevs:channel>
+
+    <wlevs:processor id="BusSpatialProcessor" >
+    </wlevs:processor>
+
+<!-- bus stops -->
+    <wlevs:channel id="BusStopChannel" event-type="BusStopPubEvent">
+        <wlevs:listener ref="BusStopPub" />
+        <wlevs:source ref="BusSpatialProcessor"/>
+    </wlevs:channel>
+
+    <wlevs:adapter id="BusStopPub" provider="httppub" />
+
+<!-- bus position -->
+    <wlevs:channel id="BusPosChannel" event-type="BusPosPubEvent">
+        <wlevs:listener ref="BusPosPub" />
+        <wlevs:source ref="BusSpatialProcessor"/>
+    </wlevs:channel>
+
+    <wlevs:adapter id="BusPosPub" provider="httppub" />
+
+<!-- bus stop arrival -->    
+    <wlevs:channel id="BusStopArrivalChannel" event-type="BusStopArrivalEvent">
+        <wlevs:listener ref="BusStopArrivalPub" />
+        <wlevs:listener ref="BusStopArrivalOutputBean" />
+        <wlevs:source ref="BusSpatialProcessor"/>
+    </wlevs:channel>
+
+    <wlevs:event-bean id="BusStopArrivalOutputBean" class="com.oracle.cep.sample.spatial.OutputBean">
+    </wlevs:event-bean>
+    
+    <wlevs:adapter id="BusStopArrivalPub" provider="httppub" />
+    
+    <wlevs:event-bean id="WebContentRegistration" class="com.oracle.cep.sample.spatial.WebContentRegistration">
+    	<wlevs:instance-property name="serverPath" value="/bus"/>
+    	<wlevs:instance-property name="resourcePath" value="/webResources"/>
+    </wlevs:event-bean>
+
+</beans>

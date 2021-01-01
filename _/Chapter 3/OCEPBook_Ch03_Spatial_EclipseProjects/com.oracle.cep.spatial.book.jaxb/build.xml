@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="JAXB Compile and JAR" basedir="." default="copy.jaxb">
+
+	<property file="${basedir}/jaxb.build.properties"/>
+ 
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+		<classpath>
+			<fileset dir="${ocep.home}/modules" includes="*.jar" />
+		</classpath>
+	</taskdef>
+	
+	<target name="build.jaxb" >
+		<mkdir dir="${basedir}/generated_src"/>
+		<xjc 			 			
+			binding="jaxb-binding-config/JaxbBindings.xml"
+			destdir="${basedir}/generated_src" 
+			package="com.oracle.cep.xml.event"	
+		>
+			<schema dir="${basedir}/schemas" includes="*.xsd"/>
+		</xjc>
+	</target>
+
+	<target name="clean.jaxb">
+		<mkdir dir="${basedir}/generated_src"/>
+		<delete includeemptydirs="true">
+			<fileset dir="${basedir}/generated_src" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="dist.jaxb" depends="clean.jaxb,build.jaxb"> 
+		<mkdir dir="${basedir}/dist"/>
+		<jar destfile="${basedir}/dist/spatial-demo-jaxb.jar">
+			<fileset dir="${basedir}/bin" />
+		</jar>
+	</target>
+	
+	<target name="copy.jaxb" depends="dist.jaxb">
+			<copy file="dist/spatial-demo-jaxb.jar" todir="../com.oracle.cep.spatial.book.demo/lib"/>			
+			<copy file="dist/spatial-demo-jaxb.jar" todir="../com.oracle.cep.spatial.book.jms.simulator/lib"/>			
+	</target>
+
+</project>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sd:ShipPosList xmlns:sd="http://xmlns.oracle.com/ns/spatialdemo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.oracle.com/ns/spatialdemo shipdemo.xsd ">
+  <sd:ShipPos>
+    <sd:shipId>102345</sd:shipId>
+    <sd:seq>1</sd:seq>
+    <sd:lat>47.564797356181465</sd:lat>
+    <sd:lon>-52.701759338378906</sd:lon>
+    <sd:info>CDN</sd:info>
+  </sd:ShipPos>
+  <sd:ShipPos>
+    <sd:shipId>102345</sd:shipId>
+    <sd:seq>2</sd:seq>
+    <sd:lat>45.4578</sd:lat>
+    <sd:lon>-50.1234</sd:lon>
+    <sd:info>CDN</sd:info>
+  </sd:ShipPos>
+  <sd:ShipPos>
+    <sd:shipId>102345</sd:shipId>
+    <sd:seq>3</sd:seq>
+    <sd:lat>45.6578</sd:lat>
+    <sd:lon>-49.1234</sd:lon>
+    <sd:info>CDN</sd:info>
+  </sd:ShipPos>      
+</sd:ShipPosList>

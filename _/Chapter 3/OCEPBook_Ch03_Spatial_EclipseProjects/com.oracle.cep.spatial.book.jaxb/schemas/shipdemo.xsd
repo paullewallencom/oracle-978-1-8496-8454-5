@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.oracle.com/ns/spatialdemo" xmlns:sd="http://xmlns.oracle.com/ns/spatialdemo" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<element name="ShipPosList" type="sd:ShipPositions"/>
+	<element name="ShipPos" type="sd:ShipPosType"/>
+	<element name="Alert" type="sd:AlertType"/>
+	<complexType name="ShipPosType">
+		<sequence>
+			<element name="shipId" type="int" minOccurs="1" maxOccurs="1"/>
+			<element name="seq" type="int" minOccurs="1" maxOccurs="1"/>
+			<element name="lat" type="double" minOccurs="1" maxOccurs="1"/>
+			<element name="lon" type="double" minOccurs="1" maxOccurs="1"/>
+			<element name="info" type="string" minOccurs="0" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+	<complexType name="ShipPositions">
+		<sequence>
+			<element name="ShipPos" maxOccurs="unbounded" type="sd:ShipPosType"/>
+		</sequence>
+	</complexType>
+	<complexType name="AlertType">
+		<sequence>
+			<element name="ShipPos" type="sd:ShipPosType" minOccurs="1" maxOccurs="1"/>
+			<element name="AlertMessage" type="string" minOccurs="1" maxOccurs="1"/>
+			<element name="AlertSeverity" type="int" minOccurs="1" maxOccurs="1"/>
+			<element name="AlertDateTime" type="dateTime" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</schema>

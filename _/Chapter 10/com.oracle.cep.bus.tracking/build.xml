@@ -1,0 +1,102 @@
+<project name="samplesbuilder" default="all" basedir=".">
+
+    <!-- Set our global properties -->
+    <property name="base.dir" value="." />
+    <property name="src.dir" value="src" />
+    <property name="output.dir" value="output" />
+    <property name="dist.dir" value="dist" />
+    <property name="debug.value" value="on" />
+    <property name="sharedlib.dir" value="${base.dir}/../../../../../modules" />
+    <property name="wlrtlib.dir" value="${base.dir}/../../../../modules"/> 
+
+    <!-- Create class path from lib and output directories. -->
+    <path id="classpath">
+        <pathelement location="${output.dir}" />
+        <fileset dir="${sharedlib.dir}">
+            <include name="*.jar" />
+        </fileset>
+        <fileset dir="${wlrtlib.dir}">
+            <include name="*.jar"/>
+        </fileset> 
+    </path>
+
+    <!-- Initialize. -->
+    <target name="property-init">
+        <!-- Test source file availability. -->
+        <available file="${src.dir}" type="dir" property="src.present" />
+        <available file="${dist.dir}" type="dir" property="dist.present" />
+    </target>
+
+    <target name="init" if="src.present" depends="property-init">
+        <!-- Create lib directory. -->
+        <mkdir dir="${dist.dir}" />
+        <!-- Create output directory. -->
+        <mkdir dir="${output.dir}" />
+    </target>
+
+    <!-- Compile and JAR everything -->
+    <target name="all" depends="property-init">
+        <antcall target="clean" />
+        <antcall target="compile" />
+        <antcall target="copyfiles" />
+        <antcall target="dist" />
+
+    </target>
+
+    <!-- Compile everything. -->
+    <target name="compile" if="src.present" depends="init">
+        <javac srcdir="${src.dir}" destdir="${output.dir}" debug="${debug.value}" verbose="no" deprecation="no">
+            <classpath refid="classpath" />
+            <include name="**/*.java" />
+        </javac>
+    </target>
+
+    <target name="copyfiles">
+        <mkdir dir="${output.dir}/META-INF/spring" />
+        <copy todir="${output.dir}/META-INF/spring">
+            <fileset dir="META-INF/spring" includes="*" />
+        </copy>
+        <mkdir dir="${output.dir}/META-INF/wlevs" />
+        <copy todir="${output.dir}/META-INF/wlevs">
+            <fileset dir="META-INF/wlevs" includes="*" />
+        </copy>
+       <copy todir="${output.dir}">
+           <fileset dir="${basedir}/web" includes="**/*"/>
+       </copy>
+    </target>
+
+    <!-- Create SAMPLE JAR file. -->
+    <target name="dist" if="src.present" depends="compile">
+        <mkdir dir="${dist.dir}" />
+        <jar manifest="META-INF/MANIFEST.MF" jarfile="${dist.dir}/com.oracle.cep.example.spatial_sample_11.1.1.1_0.jar" 
+             basedir="${output.dir}" includes="**/*">
+            <include name="META-INF/spring/*" />
+            <include name="META-INF/wlevs/*" />
+        </jar>
+    </target>
+
+    <!-- Clean up everything. -->
+    <target name="clean">
+        <delete dir="${output.dir}" />
+        <delete dir="${dist.dir}" />
+    </target>
+
+        <target name="deploy" if="dist.present" depends="property-init">
+              <java classname="com.bea.wlevs.deployment.Deployer"
+                   dir="."
+                   fork="true"
+                   output="deploytarget.log"
+                   failonerror="true">
+               <classpath>
+                     <fileset dir="${base.dir}/../../../../bin" includes="wlevsdeploy.jar"/>
+                </classpath>
+                <arg line="-url http://localhost:9002/wlevsdeployer"/>
+                <arg line="-${action}"/>
+                <arg line="dist/com.oracle.cep.example.spatial_11.1.1.1_0.jar"/>
+             </java>
+          </target>
+
+
+</project>
+
+

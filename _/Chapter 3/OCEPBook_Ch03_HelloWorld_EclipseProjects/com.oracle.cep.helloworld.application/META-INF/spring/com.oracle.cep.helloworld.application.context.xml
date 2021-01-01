@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/spring-wlevs-v11_1_1_7.xsd">
+
+    <wlevs:adapter id="helloworldAdapter" provider="myHelloAdapter">
+        <wlevs:instance-property name="message" value="Hello! The current time is:"/>
+    </wlevs:adapter>
+
+    <wlevs:channel id="helloworldInputChannel" event-type="HelloWorldEvent" >
+        <wlevs:listener ref="helloworldProcessor"/>
+        <wlevs:source ref="helloworldAdapter"/>
+    </wlevs:channel>
+
+    <wlevs:processor id="helloworldProcessor" />
+    
+    <wlevs:channel id="helloworldOutputChannel" event-type="HelloWorldEvent" advertise="true">
+        <wlevs:listener>
+            <bean class="com.oracle.cep.helloworld.bean.HelloWorldBean"/>
+        </wlevs:listener>
+        <wlevs:source ref="helloworldProcessor"/>
+    </wlevs:channel>
+</beans>
+
+
